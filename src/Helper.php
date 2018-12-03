@@ -6,6 +6,7 @@ class Helper
 {
     public static function active_menu_class($segments)
     {
+        return 'test composer';
         $segments = explode('/', $segments);
         if (count(request()->segments()) > count($segments)) {
             return '';
