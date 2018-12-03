@@ -1,0 +1,21 @@
+{
+    "name": "petrzavicak/helper",
+    "description": "Petr Zavičák Helper package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Petr Zavičák",
+            "email": "petrzavicak@hotmail.cz"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "PetrZavicak\\": "src/"
+        }
+    }
+}
