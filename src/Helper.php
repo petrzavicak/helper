@@ -4,22 +4,91 @@ namespace PetrZavicak;
 
 class Helper
 {
-    public static function active_menu_class($segments)
+    public static function active_class_by_segments($segments, $className = null)
     {
-        return 'test composer';
-        $segments = explode('/', $segments);
-        if (count(request()->segments()) > count($segments)) {
-            return '';
+        $config = config('helper.active_menu_class');
+
+        if(!$className) {
+            if($config && isset($config['class_name'])) {
+                $className = $config['class_name'];
+            } else {
+                $className = 'active';
+            }
         }
+
+        $isActive = false;
+
+        $segments = explode('/', $segments);
+
+/*        if (count(request()->segments()) > count($segments)) {
+            return '';
+        }*/
+
         foreach ($segments as $index => $segment) {
-            if ($segment == '?') {
-                return 'active';
+            if ($segment == '?' || $segment == '*') {
+                return $className;
             }
             if ($segment != request()->segment($index + 1)) {
                 return '';
             }
         }
-        return 'active';
+
+        return $className;
+    }
+
+    public static function humanFileSize ($bytes, $si = false) {
+
+        $thresh = $si ? 1000 : 1024;
+
+        if($bytes < $thresh) {
+            return $bytes + ' B';
+        }
+
+        $units = $si
+            ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+            : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+
+        $u = -1;
+
+        do {
+            $bytes /= $thresh;
+            ++$u;
+        } while($bytes >= $thresh && $u < count($units) - 1);
+
+        return round($bytes, 1) . ' ' . $units[$u];
+    }
+
+    public static function convertPHPSizeToBytes($sSize)
+    {
+        if ( is_numeric( $sSize) ) {
+            return $sSize;
+        }
+
+        $sSuffix = substr($sSize, -1);
+        $iValue = substr($sSize, 0, -1);
+
+        switch(strtoupper($sSuffix)){
+            case 'P':
+                $iValue *= 1024;
+            case 'T':
+                $iValue *= 1024;
+            case 'G':
+                $iValue *= 1024;
+            case 'M':
+                $iValue *= 1024;
+            case 'K':
+                $iValue *= 1024;
+                break;
+        }
+
+        return $iValue;
+    }
+
+    public static function getMaximumFileUploadSize($textVersion = false)
+    {
+        $maxUploadSize = min(self::convertPHPSizeToBytes(ini_get('post_max_size')), self::convertPHPSizeToBytes(ini_get('upload_max_filesize')));
+
+        return $textVersion ? self::humanFileSize($maxUploadSize) : $maxUploadSize;
     }
 
     public static function meta_title($text)
